@@ -9,7 +9,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  STACK_NAME: sam-login-rahul
+  STACK_NAME: sam-login-harshapriya
 
 jobs:
   deploy:
