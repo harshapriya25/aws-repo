@@ -1,8 +1,17 @@
-
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: SAM login demo
-
+ 
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+    Description: Deployment stage environment (dev, staging, prod)
+ 
 Resources:
   LoginFunction:
     Type: AWS::Serverless::Function
@@ -10,6 +19,9 @@ Resources:
       CodeUri: backend/
       Handler: index.handler
       Runtime: nodejs24.x
+      Environment:
+        Variables:
+          STAGE: !Ref Stage
       Events:
         Login:
           Type: HttpApi
@@ -17,7 +29,7 @@ Resources:
             ApiId: !Ref LoginApi
             Path: /login
             Method: POST
-
+ 
   LoginApi:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -29,7 +41,7 @@ Resources:
           - OPTIONS
         AllowHeaders:
           - Content-Type
-
+ 
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -38,7 +50,7 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: true
         RestrictPublicBuckets: true
-
+ 
   OAC:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -47,7 +59,7 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
-
+ 
   Distribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -67,7 +79,7 @@ Resources:
             QueryString: false
             Cookies:
               Forward: none
-
+ 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -83,19 +95,19 @@ Resources:
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
-
+ 
 Outputs:
   WebsiteURL:
     Description: CloudFront frontend URL
     Value: !Sub 'https://${Distribution.DomainName}'
-
+ 
   BucketName:
     Description: Private S3 bucket name
     Value: !Ref FrontendBucket
-
+ 
   ApiURL:
     Description: API Gateway login endpoint
     Value: !Sub 'https://${LoginApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/login'
-
+ 
   DistributionId:
     Value: !Ref Distribution

@@ -1,13 +1,37 @@
 version = 0.1
-
-[default.deploy.parameters]
-stack_name = "sam-login-harshapriya"
-resolve_s3 = true
-s3_prefix = "sam-login-harshapriya"
+ 
+[default.global.parameters]
 region = "us-east-1"
+ 
+[default.deploy.parameters]
+resolve_s3 = true
 confirm_changeset = false
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
-
-[default.global.parameters]
+ 
+[dev.deploy.parameters]
+stack_name = "sam-login-harshapriya-dev"
+s3_prefix = "sam-login-harshapriya-dev"
 region = "us-east-1"
+resolve_s3 = true
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Stage=\"dev\""
+ 
+[staging.deploy.parameters]
+stack_name = "sam-login-harshapriya-staging"
+s3_prefix = "sam-login-harshapriya-staging"
+region = "us-east-1"
+resolve_s3 = true
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Stage=\"staging\""
+ 
+[prod.deploy.parameters]
+stack_name = "sam-login-harshapriya-prod"
+s3_prefix = "sam-login-harshapriya-prod"
+region = "us-east-1"
+resolve_s3 = true
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Stage=\"prod\""
